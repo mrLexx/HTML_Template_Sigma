@@ -22,7 +22,6 @@
 /**
  * PEAR and PEAR_Error classes (for error handling)
  */
-require_once 'PEAR.php';
 
 /**#@+
  * Error codes
