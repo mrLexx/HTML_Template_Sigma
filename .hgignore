@@ -1,0 +1,4 @@
+syntax: glob
+vendor/
+composer.phar
+composer.lock
