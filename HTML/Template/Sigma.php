@@ -2164,6 +2164,12 @@ class HTML_Template_Sigma extends PEAR
                 $filename = trim($filename) . '?' . time();
                 break;
 
+            case 'dev':
+                $dot = strrpos($filename, '.');
+                $filename = substr($filename, 0, $dot) . '.dev'. substr($filename, $dot);
+                $filename = trim($filename) . '?' . time();
+                break;
+
             case '?':
             default:
                 $filename = trim($filename) . ($verFilename != '' ? '?' . $this->_getFile($this->fileRoot . trim($verFilename)) : '');
