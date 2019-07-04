@@ -2157,7 +2157,7 @@ class HTML_Template_Sigma extends PEAR
 
         list($files, $debug_files) = explode('|', $filenames, 2);
 
-        if (null !== $debug_files && $GLOBALS["its_local"]) {
+        if (null !== $debug_files && $GLOBALS["its_develop"]) {
             $files = explode(' ', $debug_files);
             $typeVersion = 'debug';
         } else {
