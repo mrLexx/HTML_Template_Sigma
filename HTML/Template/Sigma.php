@@ -2144,7 +2144,7 @@ class HTML_Template_Sigma extends PEAR
 
     }
 
-    private function jsAddFile($filename, $verFilename, $primary = false)
+    private function jsAddFile($filenames, $verFilename, $primary = false)
     {
         $typeVersion = '?';
 
@@ -2154,33 +2154,47 @@ class HTML_Template_Sigma extends PEAR
             $typeVersion = $ar[1];
         }
 
-        switch ($typeVersion) {
-            case 'v':
-                $dot = strrpos($filename, '.');
-                $filename = substr($filename, 0, $dot) . '.v' . $this->_getFile($this->fileRoot . trim($verFilename)) . substr($filename, $dot);
-                break;
 
-            case 'debug':
-                $filename = trim($filename) . '?' . time();
-                break;
+        list($files, $debug_files) = explode('|', $filenames, 2);
 
-            case 'dev':
-                $dot = strrpos($filename, '.');
-                $filename = substr($filename, 0, $dot) . '.dev'. substr($filename, $dot);
-                $filename = trim($filename) . '?' . time();
-                break;
-
-            case '?':
-            default:
-                $filename = trim($filename) . ($verFilename != '' ? '?' . $this->_getFile($this->fileRoot . trim($verFilename)) : '');
-                break;
-
+        if (null !== $debug_files && $GLOBALS["its_local"]) {
+            $files = explode(';', $debug_files);
+            $typeVersion = 'debug';
+        } else {
+            $files = [$files];
         }
 
-        if ($primary==true || $primary=='true') {
-            $this->listJsFiles['primary'][] = $filename;
-        } else {
-            $this->listJsFiles['default'][] = $filename;
+        foreach ($files as $file) {
+
+
+            switch ($typeVersion) {
+                case 'v':
+                    $dot = strrpos($file, '.');
+                    $file = substr($file, 0, $dot) . '.v' . $this->_getFile($this->fileRoot . trim($verFilename)) . substr($file, $dot);
+                    break;
+
+                case 'debug':
+                    $file = trim($file) . '?' . time();
+                    break;
+
+                case 'dev':
+                    $dot = strrpos($file, '.');
+                    $file = substr($file, 0, $dot) . '.dev' . substr($file, $dot);
+                    $file = trim($file) . '?' . time();
+                    break;
+
+                case '?':
+                default:
+                    $file = trim($file) . ($verFilename != '' ? '?' . $this->_getFile($this->fileRoot . trim($verFilename)) : '');
+                    break;
+
+            }
+
+            if ($primary == true || $primary == 'true') {
+                $this->listJsFiles['primary'][] = $file;
+            } else {
+                $this->listJsFiles['default'][] = $file;
+            }
         }
 
         return '';
@@ -2257,7 +2271,7 @@ class HTML_Template_Sigma extends PEAR
         $nameSharedMemory = @$GLOBALS["HTMLTemplateSigmaTplPrf"] . '_' . 'TemplateSigmaExist_' . md5(realpath($filename));
 
         /* */
-        if (@$GLOBALS["HTMLTemplateSigmaTplPrf"] != '' && $this->SharedMemory != false) 
+        if (@$GLOBALS["HTMLTemplateSigmaTplPrf"] != '' && $this->SharedMemory != false)
         {
             $tmp=$this->SharedMemory->get($nameSharedMemory);
             if($tmp=='yes'){
@@ -2280,7 +2294,7 @@ class HTML_Template_Sigma extends PEAR
 
         if (@$GLOBALS["its_mobile"] === true && $file_exists) {
             $filename = $filenameMobile;
-            
+
         };
 
         return $filename;
