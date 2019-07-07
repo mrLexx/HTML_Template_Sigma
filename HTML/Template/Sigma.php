@@ -2204,7 +2204,7 @@ class HTML_Template_Sigma extends PEAR
     private function jsGetListFiles()
     {
         $return = array();
-        if (count($this->listJsFiles['default']) > 0) {
+        if (count($this->listJsFiles['primary']) || count($this->listJsFiles['default']) > 0) {
             $arSummary = array_unique(array_merge($this->listJsFiles['primary'], $this->listJsFiles['default']));
             foreach ($arSummary as $file) {
                 $return[] = '<script src="' . $file . '" type="text/javascript"></script>';
