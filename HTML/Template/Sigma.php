@@ -454,7 +454,7 @@ class HTML_Template_Sigma extends PEAR
      *
      * @see    HTML_Template_Sigma()
      * @access public
-     * @return void
+     * @return $this;
      */
     function setRoot($root)
     {
@@ -462,6 +462,7 @@ class HTML_Template_Sigma extends PEAR
             $root .= DIRECTORY_SEPARATOR;
         }
         $this->fileRoot = $root;
+        return $this;
     }
 
 
@@ -482,7 +483,7 @@ class HTML_Template_Sigma extends PEAR
      *
      * @see    HTML_Template_Sigma(), _getCached(), _writeCache()
      * @access public
-     * @return void
+     * @return $this
      */
     function setCacheRoot($root)
     {
@@ -492,11 +493,13 @@ class HTML_Template_Sigma extends PEAR
             $root .= DIRECTORY_SEPARATOR;
         }
         $this->_cacheRoot = $root;
+        return $this;
     }
 
     /**
      * @access public
      * @param object SharedMemory
+     * @return $this
      */
     function setSharedMemory(&$SharedMemory)
     {
@@ -504,6 +507,7 @@ class HTML_Template_Sigma extends PEAR
         if ($SharedMemory != false && strpos(get_class($SharedMemory), 'SharedMemory') !== false) {
             $this->SharedMemory = $SharedMemory;
         }
+        return $this;
     }
 
 
@@ -770,7 +774,7 @@ class HTML_Template_Sigma extends PEAR
      * @param string|array $value variable value if $variable is not an array
      *
      * @access public
-     * @return void
+     * @return $this
      */
     function setVariable($variable, $value = '')
     {
@@ -783,6 +787,7 @@ class HTML_Template_Sigma extends PEAR
         } else {
             $this->_variables[$variable] = $value;
         }
+        return $this;
     }
 
 
@@ -793,7 +798,7 @@ class HTML_Template_Sigma extends PEAR
      * @param string|array $value variable value if $variable is not an array
      *
      * @access public
-     * @return void
+     * @return $this
      * @see    setVariable()
      */
     function setGlobalVariable($variable, $value = '')
@@ -807,6 +812,7 @@ class HTML_Template_Sigma extends PEAR
         } else {
             $this->_globalVariables[$variable] = $value;
         }
+        return $this;
     }
 
 
