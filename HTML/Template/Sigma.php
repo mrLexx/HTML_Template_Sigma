@@ -404,18 +404,17 @@ class HTML_Template_Sigma extends PEAR
         $this->jsReadyString = &$GLOBALS['HTMLTemplateSigmajsReadyString'];
 
         if (!is_array(@$GLOBALS['HTMLTemplateSigmaJsFiles'])) {
-            $GLOBALS['HTMLTemplateSigmaJsFiles'] = array();
+            $GLOBALS['HTMLTemplateSigmaJsFiles'] = [];
 
         }
         $this->listJsFiles = &$GLOBALS['HTMLTemplateSigmaJsFiles'];
 
         if (!isset($this->listJsFiles['primary'])) {
-            $this->listJsFiles['primary'] = array();
+            $this->listJsFiles['primary'] = [];
         }
         if (!isset($this->listJsFiles['default'])) {
-            $this->listJsFiles['default'] = array();
+            $this->listJsFiles['default'] = [];
         }
-
 
         // the class is inherited from PEAR to be able to use $this->setErrorHandling()
         $this->PEAR();
@@ -2144,7 +2143,7 @@ class HTML_Template_Sigma extends PEAR
 
     }
 
-    private function jsAddFile($filenames, $verFilename, $primary = false)
+    private function jsAddFile($filenames, $verFilename, $primary = false,$additional='')
     {
         $typeVersion = '?';
 
@@ -2191,9 +2190,9 @@ class HTML_Template_Sigma extends PEAR
             }
 
             if ($primary == true || $primary == 'true') {
-                $this->listJsFiles['primary'][] = $file;
+                $this->listJsFiles['primary'][] = ['file' => $file, 'additional' => $additional];
             } else {
-                $this->listJsFiles['default'][] = $file;
+                $this->listJsFiles['default'][] = ['file' => $file, 'additional' => $additional];
             }
         }
 
@@ -2203,11 +2202,29 @@ class HTML_Template_Sigma extends PEAR
 
     private function jsGetListFiles()
     {
-        $return = array();
-        if (count($this->listJsFiles['primary']) || count($this->listJsFiles['default']) > 0) {
-            $arSummary = array_unique(array_merge($this->listJsFiles['primary'], $this->listJsFiles['default']));
-            foreach ($arSummary as $file) {
-                $return[] = '<script src="' . $file . '" type="text/javascript"></script>';
+        $return = [];
+        $arSummary = [];
+        $filesExist=[];
+        if(count($this->listJsFiles['primary'])>0){
+            foreach($this->listJsFiles['primary'] as $v){
+                if(!in_array($v['file'],$filesExist)){
+                    $filesExist[]=$v['file'];
+                    $arSummary[]=$v;
+                }
+            }
+        }
+        if(count($this->listJsFiles['default'])>0){
+            foreach($this->listJsFiles['default'] as $v){
+                if(!in_array($v['file'],$filesExist)){
+                    $filesExist[]=$v['file'];
+                    $arSummary[]=$v;
+                }
+            }
+        }
+
+        if (count($arSummary) > 0) {
+            foreach ($arSummary as $v) {
+                $return[] = '<script ' . $v['additional'] . ' src="' . $v['file'] . '" type="text/javascript"></script>';
             }
         }
 
