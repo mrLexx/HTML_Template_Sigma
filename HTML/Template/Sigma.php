@@ -2162,7 +2162,7 @@ class HTML_Template_Sigma extends PEAR
             $verFilename = $ar[0];
             $typeVersion = $ar[1];
         }
-        $debugMode = false;
+        $proccCdn = true;
 
 
         list($files, $debug_files) = explode('|', $filenames, 2);
@@ -2170,9 +2170,11 @@ class HTML_Template_Sigma extends PEAR
         if (null !== $debug_files && $GLOBALS["its_develop"]) {
             $files = explode(' ', $debug_files);
             $typeVersion = 'debug';
-            $debugMode = true;
         } else {
             $files = [$files];
+        }
+        if($GLOBALS["its_develop"]){
+            $proccCdn = false;
         }
 
         foreach ($files as $file) {
@@ -2202,7 +2204,7 @@ class HTML_Template_Sigma extends PEAR
             }
             /** CDN mode */
 
-            if (!$debugMode && array_key_exists('HTMLTemplateSigmaCdnParam', $GLOBALS)) {
+            if ($proccCdn && array_key_exists('HTMLTemplateSigmaCdnParam', $GLOBALS)) {
                 $cdnParams = $GLOBALS['HTMLTemplateSigmaCdnParam'];
                 if ($cdnParams['css']['allow'] == true) {
                     foreach ($cdnParams['css']['from'] as $from => $to) {
@@ -2233,7 +2235,7 @@ class HTML_Template_Sigma extends PEAR
             $verFilename = $ar[0];
             $typeVersion = $ar[1];
         }
-        $debugMode = false;
+        $proccCdn = true;
 
 
         list($files, $debug_files) = explode('|', $filenames, 2);
@@ -2241,9 +2243,11 @@ class HTML_Template_Sigma extends PEAR
         if (null !== $debug_files && $GLOBALS["its_develop"]) {
             $files = explode(' ', $debug_files);
             $typeVersion = 'debug';
-            $debugMode = true;
         } else {
             $files = [$files];
+        }
+        if($GLOBALS["its_develop"]){
+            $proccCdn = false;
         }
 
         foreach ($files as $file) {
@@ -2273,7 +2277,7 @@ class HTML_Template_Sigma extends PEAR
             }
             /** CDN mode */
 
-            if (!$debugMode && array_key_exists('HTMLTemplateSigmaCdnParam', $GLOBALS)) {
+            if ($proccCdn && array_key_exists('HTMLTemplateSigmaCdnParam', $GLOBALS)) {
                 $cdnParams = $GLOBALS['HTMLTemplateSigmaCdnParam'];
                 if ($cdnParams['js']['allow'] == true) {
                     foreach ($cdnParams['js']['from'] as $from => $to) {
@@ -2302,7 +2306,7 @@ class HTML_Template_Sigma extends PEAR
             $verFilename = $ar[0];
             $typeVersion = $ar[1];
         }
-        $debugMode = false;
+        $proccCdn = true;
 
 
         list($files, $debug_files) = explode('|', $filenames, 2);
@@ -2310,9 +2314,11 @@ class HTML_Template_Sigma extends PEAR
         if (null !== $debug_files && $GLOBALS["its_develop"]) {
             $files = explode(' ', $debug_files);
             $typeVersion = 'debug';
-            $debugMode = true;
         } else {
             $files = [$files];
+        }
+        if($GLOBALS["its_develop"]){
+            $proccCdn = false;
         }
 
         foreach ($files as $file) {
@@ -2343,7 +2349,7 @@ class HTML_Template_Sigma extends PEAR
 
             /** CDN mode */
 
-            if (!$debugMode && array_key_exists('HTMLTemplateSigmaCdnParam', $GLOBALS)) {
+            if ($proccCdn && array_key_exists('HTMLTemplateSigmaCdnParam', $GLOBALS)) {
                 $cdnParams = $GLOBALS['HTMLTemplateSigmaCdnParam'];
                 if ($cdnParams['js']['allow'] == true) {
                     foreach ($cdnParams['js']['from'] as $from => $to) {
