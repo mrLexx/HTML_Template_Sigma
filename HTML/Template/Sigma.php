@@ -434,6 +434,8 @@ class HTML_Template_Sigma extends PEAR
         $this->setCallbackFunction('r', 'rawurlencode');
         $this->setCallbackFunction('j', array(&$this, '_jsEscape'));
 
+        $this->setCallbackFunction('cssCdnFile', array(&$this, 'cssCdnFile'));
+        $this->setCallbackFunction('jsCdnFile', array(&$this, 'jsCdnFile'));
         $this->setCallbackFunction('jsAddFile', array(&$this, 'jsAddFile'));
         $this->setCallbackFunction('jsGetListFiles', array(&$this, 'jsGetListFiles'));
         $this->setCallbackFunction('jsAddReady', array(&$this, 'jsAddReady'));
@@ -2146,6 +2148,117 @@ class HTML_Template_Sigma extends PEAR
         }else{
             return $full;
         }
+
+    }
+
+    private function cssCdnFile($filenames, $verFilename, $additional='')
+    {
+        $cssFiles=[];
+
+        $typeVersion = '?';
+
+        if (strpos($verFilename, '|') !== false) {
+            $ar = explode('|', $verFilename);
+            $verFilename = $ar[0];
+            $typeVersion = $ar[1];
+        }
+
+
+        list($files, $debug_files) = explode('|', $filenames, 2);
+
+        if (null !== $debug_files && $GLOBALS["its_develop"]) {
+            $files = explode(' ', $debug_files);
+            $typeVersion = 'debug';
+        } else {
+            $files = [$files];
+        }
+
+        foreach ($files as $file) {
+
+
+            switch ($typeVersion) {
+                case 'v':
+                    $dot = strrpos($file, '.');
+                    $file = substr($file, 0, $dot) . '.v' . $this->_getFile($this->fileRoot . trim($verFilename)) . substr($file, $dot);
+                    break;
+
+                case 'debug':
+                    $file = trim($file) . '?' . time();
+                    break;
+
+                case 'dev':
+                    $dot = strrpos($file, '.');
+                    $file = substr($file, 0, $dot) . '.dev' . substr($file, $dot);
+                    $file = trim($file) . '?' . time();
+                    break;
+
+                case '?':
+                default:
+                    $file = trim($file) . ($verFilename != '' ? '?' . $this->_getFile($this->fileRoot . trim($verFilename)) : '');
+                    break;
+
+            }
+
+            $cssFiles[] = '<link href="' . $file . '" type="text/css" rel="stylesheet" />';
+
+        }
+
+        return join("\r\n", $cssFiles);
+
+    }
+    private function jsCdnFile($filenames, $verFilename, $additional='')
+    {
+        $jsFiles=[];
+
+        $typeVersion = '?';
+
+        if (strpos($verFilename, '|') !== false) {
+            $ar = explode('|', $verFilename);
+            $verFilename = $ar[0];
+            $typeVersion = $ar[1];
+        }
+
+
+        list($files, $debug_files) = explode('|', $filenames, 2);
+
+        if (null !== $debug_files && $GLOBALS["its_develop"]) {
+            $files = explode(' ', $debug_files);
+            $typeVersion = 'debug';
+        } else {
+            $files = [$files];
+        }
+
+        foreach ($files as $file) {
+
+
+            switch ($typeVersion) {
+                case 'v':
+                    $dot = strrpos($file, '.');
+                    $file = substr($file, 0, $dot) . '.v' . $this->_getFile($this->fileRoot . trim($verFilename)) . substr($file, $dot);
+                    break;
+
+                case 'debug':
+                    $file = trim($file) . '?' . time();
+                    break;
+
+                case 'dev':
+                    $dot = strrpos($file, '.');
+                    $file = substr($file, 0, $dot) . '.dev' . substr($file, $dot);
+                    $file = trim($file) . '?' . time();
+                    break;
+
+                case '?':
+                default:
+                    $file = trim($file) . ($verFilename != '' ? '?' . $this->_getFile($this->fileRoot . trim($verFilename)) : '');
+                    break;
+
+            }
+
+            $jsFiles[] = '<script ' . $additional . ' src="' . $file . '" type="text/javascript"></script>';
+
+        }
+
+        return join("\r\n", $jsFiles);
 
     }
 
