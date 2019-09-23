@@ -2208,6 +2208,7 @@ class HTML_Template_Sigma extends PEAR
                     foreach ($cdnParams['css']['from'] as $from => $to) {
                         if (strpos($file, $from) === 0) {
                             $file = str_replace($from, $to, $file);
+                            break;
                         }
                     }
                 }
