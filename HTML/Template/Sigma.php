@@ -2233,6 +2233,7 @@ class HTML_Template_Sigma extends PEAR
             $verFilename = $ar[0];
             $typeVersion = $ar[1];
         }
+        $debugMode = false;
 
 
         list($files, $debug_files) = explode('|', $filenames, 2);
@@ -2240,6 +2241,76 @@ class HTML_Template_Sigma extends PEAR
         if (null !== $debug_files && $GLOBALS["its_develop"]) {
             $files = explode(' ', $debug_files);
             $typeVersion = 'debug';
+            $debugMode = true;
+        } else {
+            $files = [$files];
+        }
+
+        foreach ($files as $file) {
+
+
+            switch ($typeVersion) {
+                case 'v':
+                    $dot = strrpos($file, '.');
+                    $file = substr($file, 0, $dot) . '.v' . $this->_getFile($this->fileRoot . trim($verFilename)) . substr($file, $dot);
+                    break;
+
+                case 'debug':
+                    $file = trim($file) . '?' . time();
+                    break;
+
+                case 'dev':
+                    $dot = strrpos($file, '.');
+                    $file = substr($file, 0, $dot) . '.dev' . substr($file, $dot);
+                    $file = trim($file) . '?' . time();
+                    break;
+
+                case '?':
+                default:
+                    $file = trim($file) . ($verFilename != '' ? '?' . $this->_getFile($this->fileRoot . trim($verFilename)) : '');
+                    break;
+
+            }
+            /** CDN mode */
+
+            if (!$debugMode && array_key_exists('HTMLTemplateSigmaCdnParam', $GLOBALS)) {
+                $cdnParams = $GLOBALS['HTMLTemplateSigmaCdnParam'];
+                if ($cdnParams['js']['allow'] == true) {
+                    foreach ($cdnParams['js']['from'] as $from => $to) {
+                        if (strpos($file, $from) === 0) {
+                            $file = str_replace($from, $to, $file);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            $jsFiles[] = '<script ' . $additional . ' src="' . $file . '" type="text/javascript"></script>';
+
+        }
+
+        return join("\r\n", $jsFiles);
+
+    }
+
+    private function jsAddFile($filenames, $verFilename, $primary = false,$additional='')
+    {
+        $typeVersion = '?';
+
+        if (strpos($verFilename, '|') !== false) {
+            $ar = explode('|', $verFilename);
+            $verFilename = $ar[0];
+            $typeVersion = $ar[1];
+        }
+        $debugMode = false;
+
+
+        list($files, $debug_files) = explode('|', $filenames, 2);
+
+        if (null !== $debug_files && $GLOBALS["its_develop"]) {
+            $files = explode(' ', $debug_files);
+            $typeVersion = 'debug';
+            $debugMode = true;
         } else {
             $files = [$files];
         }
@@ -2270,58 +2341,18 @@ class HTML_Template_Sigma extends PEAR
 
             }
 
-            $jsFiles[] = '<script ' . $additional . ' src="' . $file . '" type="text/javascript"></script>';
+            /** CDN mode */
 
-        }
-
-        return join("\r\n", $jsFiles);
-
-    }
-
-    private function jsAddFile($filenames, $verFilename, $primary = false,$additional='')
-    {
-        $typeVersion = '?';
-
-        if (strpos($verFilename, '|') !== false) {
-            $ar = explode('|', $verFilename);
-            $verFilename = $ar[0];
-            $typeVersion = $ar[1];
-        }
-
-
-        list($files, $debug_files) = explode('|', $filenames, 2);
-
-        if (null !== $debug_files && $GLOBALS["its_develop"]) {
-            $files = explode(' ', $debug_files);
-            $typeVersion = 'debug';
-        } else {
-            $files = [$files];
-        }
-
-        foreach ($files as $file) {
-
-
-            switch ($typeVersion) {
-                case 'v':
-                    $dot = strrpos($file, '.');
-                    $file = substr($file, 0, $dot) . '.v' . $this->_getFile($this->fileRoot . trim($verFilename)) . substr($file, $dot);
-                    break;
-
-                case 'debug':
-                    $file = trim($file) . '?' . time();
-                    break;
-
-                case 'dev':
-                    $dot = strrpos($file, '.');
-                    $file = substr($file, 0, $dot) . '.dev' . substr($file, $dot);
-                    $file = trim($file) . '?' . time();
-                    break;
-
-                case '?':
-                default:
-                    $file = trim($file) . ($verFilename != '' ? '?' . $this->_getFile($this->fileRoot . trim($verFilename)) : '');
-                    break;
-
+            if (!$debugMode && array_key_exists('HTMLTemplateSigmaCdnParam', $GLOBALS)) {
+                $cdnParams = $GLOBALS['HTMLTemplateSigmaCdnParam'];
+                if ($cdnParams['js']['allow'] == true) {
+                    foreach ($cdnParams['js']['from'] as $from => $to) {
+                        if (strpos($file, $from) === 0) {
+                            $file = str_replace($from, $to, $file);
+                            break;
+                        }
+                    }
+                }
             }
 
             if ($primary == true || $primary == 'true') {
