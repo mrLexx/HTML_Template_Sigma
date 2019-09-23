@@ -2151,9 +2151,9 @@ class HTML_Template_Sigma extends PEAR
 
     }
 
-    private function cssCdnFile($filenames, $verFilename, $additional='')
+    private function cssCdnFile($filenames, $verFilename)
     {
-        $cssFiles=[];
+        $cssFiles = [];
 
         $typeVersion = '?';
 
@@ -2162,6 +2162,7 @@ class HTML_Template_Sigma extends PEAR
             $verFilename = $ar[0];
             $typeVersion = $ar[1];
         }
+        $debugMode = false;
 
 
         list($files, $debug_files) = explode('|', $filenames, 2);
@@ -2169,6 +2170,7 @@ class HTML_Template_Sigma extends PEAR
         if (null !== $debug_files && $GLOBALS["its_develop"]) {
             $files = explode(' ', $debug_files);
             $typeVersion = 'debug';
+            $debugMode = true;
         } else {
             $files = [$files];
         }
@@ -2198,6 +2200,18 @@ class HTML_Template_Sigma extends PEAR
                     break;
 
             }
+            /** CDN mode */
+
+            if (!$debugMode && array_key_exists('HTMLTemplateSigmaCdnParam', $GLOBALS)) {
+                $cdnParams = $GLOBALS['HTMLTemplateSigmaCdnParam'];
+                if ($cdnParams['css']['allow'] == true) {
+                    foreach ($cdnParams['css']['from'] as $from => $to) {
+                        if (strpos($file, $from) === 0) {
+                            $file = str_replace($from, $to, $file);
+                        }
+                    }
+                }
+            }
 
             $cssFiles[] = '<link href="' . $file . '" type="text/css" rel="stylesheet" />';
 
@@ -2206,6 +2220,7 @@ class HTML_Template_Sigma extends PEAR
         return join("\r\n", $cssFiles);
 
     }
+
     private function jsCdnFile($filenames, $verFilename, $additional='')
     {
         $jsFiles=[];
