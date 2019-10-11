@@ -211,7 +211,7 @@ class HTML_Template_Sigma extends PEAR
      * @see      _buildBlocks()
      * @access   private
      */
-    var $_blocks = array();
+    var $_blocks = [];
 
     /**
      * Content of parsed blocks
@@ -219,7 +219,7 @@ class HTML_Template_Sigma extends PEAR
      * @see      get(), parse()
      * @access   private
      */
-    var $_parsedBlocks = array();
+    var $_parsedBlocks = [];
 
     /**
      * Variable names that appear in the block
@@ -227,7 +227,7 @@ class HTML_Template_Sigma extends PEAR
      * @see      _buildBlockVariables()
      * @access   private
      */
-    var $_blockVariables = array();
+    var $_blockVariables = [];
 
     /**
      * Inner blocks inside the block
@@ -235,7 +235,7 @@ class HTML_Template_Sigma extends PEAR
      * @see      _buildBlocks()
      * @access   private
      */
-    var $_children = array();
+    var $_children = [];
 
     /**
      * List of blocks to preserve even if they are "empty"
@@ -243,7 +243,7 @@ class HTML_Template_Sigma extends PEAR
      * @see      touchBlock(), $removeEmptyBlocks
      * @access   private
      */
-    var $_touchedBlocks = array();
+    var $_touchedBlocks = [];
 
     /**
      * List of blocks which should not be shown even if not "empty"
@@ -251,7 +251,7 @@ class HTML_Template_Sigma extends PEAR
      * @see      hideBlock(), $removeEmptyBlocks
      * @access   private
      */
-    var $_hiddenBlocks = array();
+    var $_hiddenBlocks = [];
 
     /**
      * Variables for substitution.
@@ -263,7 +263,7 @@ class HTML_Template_Sigma extends PEAR
      * @see      setVariable()
      * @access   private
      */
-    var $_variables = array();
+    var $_variables = [];
 
     /**
      * Global variables for substitution
@@ -277,7 +277,7 @@ class HTML_Template_Sigma extends PEAR
      * @see      setVariable(), setGlobalVariable()
      * @access   private
      */
-    var $_globalVariables = array();
+    var $_globalVariables = [];
 
     /**
      * Root directory for "source" templates
@@ -306,11 +306,11 @@ class HTML_Template_Sigma extends PEAR
      * @var      array
      * @access   private
      */
-    var $_options = array(
+    var $_options = [
         'preserve_data' => false,
         'trim_on_save' => true,
-        'charset' => 'iso-8859-1'
-    );
+        'charset' => 'iso-8859-1',
+    ];
 
     /**
      * Function name prefix used when searching for function calls in the template
@@ -336,14 +336,14 @@ class HTML_Template_Sigma extends PEAR
      * @var    array
      * @access private
      */
-    var $_functions = array();
+    var $_functions = [];
 
     /**
      * List of callback functions specified by the user
      * @var    array
      * @access private
      */
-    var $_callback = array();
+    var $_callback = [];
 
     /**
      * RegExp used to find file inclusion calls in the template
@@ -362,7 +362,7 @@ class HTML_Template_Sigma extends PEAR
      * @var    array
      * @access private
      */
-    var $_triggers = array();
+    var $_triggers = [];
 
     /**
      * Name of the block to use in _makeTrigger() (see bug #20068)
@@ -378,9 +378,9 @@ class HTML_Template_Sigma extends PEAR
      */
     var $SharedMemory = false;
 
-    private $listJsFiles = array();
+    private $listJsFiles = [];
 
-    private $jsReadyString = array();
+    private $jsReadyString = [];
 
     /**
      * Constructor: builds some complex regular expressions and optionally
@@ -398,7 +398,7 @@ class HTML_Template_Sigma extends PEAR
     public function __construct($root = '', $cacheRoot = '', &$SharedMemory = false)
     {
         if (!is_array(@$GLOBALS['HTMLTemplateSigmajsReadyString'])) {
-            $GLOBALS['HTMLTemplateSigmajsReadyString'] = array();
+            $GLOBALS['HTMLTemplateSigmajsReadyString'] = [];
 
         }
         $this->jsReadyString = &$GLOBALS['HTMLTemplateSigmajsReadyString'];
@@ -428,19 +428,20 @@ class HTML_Template_Sigma extends PEAR
         $this->setRoot($root);
         $this->setCacheRoot($cacheRoot);
 
-        $this->setCallbackFunction('h', array(&$this, '_htmlspecialchars'));
-        $this->setCallbackFunction('e', array(&$this, '_htmlentities'));
+        $this->setCallbackFunction('h', [&$this, '_htmlspecialchars']);
+        $this->setCallbackFunction('e', [&$this, '_htmlentities']);
         $this->setCallbackFunction('u', 'urlencode');
         $this->setCallbackFunction('r', 'rawurlencode');
-        $this->setCallbackFunction('j', array(&$this, '_jsEscape'));
+        $this->setCallbackFunction('j', [&$this, '_jsEscape']);
 
-        $this->setCallbackFunction('cssCdnFile', array(&$this, 'cssCdnFile'));
-        $this->setCallbackFunction('jsCdnFile', array(&$this, 'jsCdnFile'));
-        $this->setCallbackFunction('jsAddFile', array(&$this, 'jsAddFile'));
-        $this->setCallbackFunction('jsGetListFiles', array(&$this, 'jsGetListFiles'));
-        $this->setCallbackFunction('jsAddReady', array(&$this, 'jsAddReady'));
-        $this->setCallbackFunction('jsGetReady', array(&$this, 'jsGetReady'));
-        $this->setCallbackFunction('strMobile', array(&$this, 'strMobile'));
+        $this->setCallbackFunction('cssCdnFile', [&$this, 'cssCdnFile']);
+        $this->setCallbackFunction('jsCdnFile', [&$this, 'jsCdnFile']);
+        $this->setCallbackFunction('cdnFile', [&$this, 'cdnFile']);
+        $this->setCallbackFunction('jsAddFile', [&$this, 'jsAddFile']);
+        $this->setCallbackFunction('jsGetListFiles', [&$this, 'jsGetListFiles']);
+        $this->setCallbackFunction('jsAddReady', [&$this, 'jsAddReady']);
+        $this->setCallbackFunction('jsGetReady', [&$this, 'jsGetReady']);
+        $this->setCallbackFunction('strMobile', [&$this, 'strMobile']);
 
         if ($SharedMemory != false) {
             $this->setSharedMemory($SharedMemory);
@@ -454,9 +455,9 @@ class HTML_Template_Sigma extends PEAR
      *
      * @param string $root directory name
      *
+     * @return $this;
      * @see    HTML_Template_Sigma()
      * @access public
-     * @return $this;
      */
     function setRoot($root)
     {
@@ -483,9 +484,9 @@ class HTML_Template_Sigma extends PEAR
      *
      * @param string $root directory name
      *
+     * @return $this
      * @see    HTML_Template_Sigma(), _getCached(), _writeCache()
      * @access public
-     * @return $this
      */
     function setCacheRoot($root)
     {
@@ -554,7 +555,7 @@ class HTML_Template_Sigma extends PEAR
     {
         static $errorMessages;
         if (!isset($errorMessages)) {
-            $errorMessages = array(
+            $errorMessages = [
                 SIGMA_ERROR => 'unknown error',
                 SIGMA_OK => '',
                 SIGMA_TPL_NOT_FOUND => 'Cannot read the template file \'%s\'',
@@ -567,8 +568,8 @@ class HTML_Template_Sigma extends PEAR
                 SIGMA_PLACEHOLDER_DUPLICATE => 'Placeholder \'%s\' should be unique, found in multiple blocks',
                 SIGMA_BLOCK_EXISTS => 'Block \'%s\' already exists',
                 SIGMA_INVALID_CALLBACK => 'Callback does not exist',
-                SIGMA_CALLBACK_SYNTAX_ERROR => 'Cannot parse template function: %s'
-            );
+                SIGMA_CALLBACK_SYNTAX_ERROR => 'Cannot parse template function: %s',
+            ];
         }
 
         if (is_a($code, 'PEAR_Error')) {
@@ -647,8 +648,8 @@ class HTML_Template_Sigma extends PEAR
      *
      * @return bool whether the block was "empty"
      * @access public
-     * @see    parseCurrentBlock()
      * @throws PEAR_Error
+     * @see    parseCurrentBlock()
      */
     function parse($block = '__global__', $flagRecursion = false, $fakeParse = false)
     {
@@ -666,7 +667,7 @@ class HTML_Template_Sigma extends PEAR
         $outer = $this->_blocks[$block];
 
         if (!$flagRecursion) {
-            $vars = array();
+            $vars = [];
         }
         // block is not empty if its local var is substituted
         $empty = true;
@@ -715,7 +716,7 @@ class HTML_Template_Sigma extends PEAR
             if (0 != count($vars) && (!$flagRecursion || !empty($this->_functions[$block]))) {
                 $varKeys = array_keys($vars);
                 $varValues = $this->_options['preserve_data']
-                    ? array_map(array(&$this, '_preserveOpeningDelimiter'), array_values($vars))
+                    ? array_map([&$this, '_preserveOpeningDelimiter'], array_values($vars))
                     : array_values($vars);
             }
 
@@ -729,7 +730,7 @@ class HTML_Template_Sigma extends PEAR
                         $placeholder = $this->openingDelimiter . '__function_' . $id . '__' . $this->closingDelimiter;
                         // do not waste time calling function more than once
                         if (!isset($vars[$placeholder])) {
-                            $args = array();
+                            $args = [];
                             $preserveArgs = !empty($this->_callback[$data['name']]['preserveArgs']);
                             foreach ($data['args'] as $arg) {
                                 $args[] = (empty($varKeys) || $preserveArgs)
@@ -840,9 +841,9 @@ class HTML_Template_Sigma extends PEAR
     /**
      * Parses the current block
      *
+     * @return bool whether the block was "empty"
      * @see    parse(), setCurrentBlock()
      * @access public
-     * @return bool whether the block was "empty"
      */
     function parseCurrentBlock()
     {
@@ -987,9 +988,9 @@ class HTML_Template_Sigma extends PEAR
         if (false === ($template = $this->_getFile($this->fileRoot . $filename))) {
             return $this->raiseError($this->errorMessage(SIGMA_TPL_NOT_FOUND, $filename), SIGMA_TPL_NOT_FOUND);
         }
-        $this->_triggers = array();
+        $this->_triggers = [];
         $this->_triggerBlock = '__global__';
-        $template = preg_replace_callback($this->includeRegExp, array(&$this, '_makeTrigger'), $template);
+        $template = preg_replace_callback($this->includeRegExp, [&$this, '_makeTrigger'], $template);
         if (SIGMA_OK !== ($res = $this->setTemplate($template, $removeUnknownVariables, $removeEmptyBlocks))) {
             return $res;
         } else {
@@ -1071,8 +1072,8 @@ class HTML_Template_Sigma extends PEAR
         if (false === ($template = $this->_getFile($this->fileRoot . $filename))) {
             return $this->raiseError($this->errorMessage(SIGMA_TPL_NOT_FOUND, $filename), SIGMA_TPL_NOT_FOUND);
         }
-        list($oldTriggerBlock, $this->_triggerBlock) = array($this->_triggerBlock, $block);
-        $template = preg_replace_callback($this->includeRegExp, array(&$this, '_makeTrigger'), $template);
+        list($oldTriggerBlock, $this->_triggerBlock) = [$this->_triggerBlock, $block];
+        $template = preg_replace_callback($this->includeRegExp, [&$this, '_makeTrigger'], $template);
         $this->_triggerBlock = $oldTriggerBlock;
         if (SIGMA_OK !== ($res = $this->addBlock($placeholder, $block, $template))) {
             return $res;
@@ -1153,8 +1154,8 @@ class HTML_Template_Sigma extends PEAR
         if (false === ($template = $this->_getFile($this->fileRoot . $filename))) {
             return $this->raiseError($this->errorMessage(SIGMA_TPL_NOT_FOUND, $filename), SIGMA_TPL_NOT_FOUND);
         }
-        list($oldTriggerBlock, $this->_triggerBlock) = array($this->_triggerBlock, $block);
-        $template = preg_replace_callback($this->includeRegExp, array(&$this, '_makeTrigger'), $template);
+        list($oldTriggerBlock, $this->_triggerBlock) = [$this->_triggerBlock, $block];
+        $template = preg_replace_callback($this->includeRegExp, [&$this, '_makeTrigger'], $template);
         $this->_triggerBlock = $oldTriggerBlock;
         if (SIGMA_OK !== ($res = $this->replaceBlock($block, $template, $keepContent))) {
             return $res;
@@ -1255,10 +1256,10 @@ class HTML_Template_Sigma extends PEAR
         if (!is_callable($callback)) {
             return $this->raiseError($this->errorMessage(SIGMA_INVALID_CALLBACK), SIGMA_INVALID_CALLBACK);
         }
-        $this->_callback[$tplFunction] = array(
+        $this->_callback[$tplFunction] = [
             'data' => $callback,
-            'preserveArgs' => $preserveArgs
-        );
+            'preserveArgs' => $preserveArgs,
+        ];
         return SIGMA_OK;
     } // end func setCallbackFunction
 
@@ -1284,11 +1285,11 @@ class HTML_Template_Sigma extends PEAR
             return $this->raiseError($this->errorMessage(SIGMA_BLOCK_NOT_FOUND, $parent), SIGMA_BLOCK_NOT_FOUND);
         }
         if (!$recursive) {
-            return isset($this->_children[$parent]) ? array_keys($this->_children[$parent]) : array();
+            return isset($this->_children[$parent]) ? array_keys($this->_children[$parent]) : [];
         } else {
-            $ret = array('name' => $parent);
+            $ret = ['name' => $parent];
             if (!empty($this->_children[$parent])) {
-                $ret['children'] = array();
+                $ret['children'] = [];
                 foreach (array_keys($this->_children[$parent]) as $child) {
                     $ret['children'][] = $this->getBlockList($child, true);
                 }
@@ -1314,7 +1315,7 @@ class HTML_Template_Sigma extends PEAR
         if (!isset($this->_blocks[$block])) {
             return $this->raiseError($this->errorMessage(SIGMA_BLOCK_NOT_FOUND, $block), SIGMA_BLOCK_NOT_FOUND);
         }
-        $ret = array();
+        $ret = [];
         foreach ($this->_blockVariables[$block] as $var => $v) {
             if ('__' != substr($var, 0, 2) || '__' != substr($var, -2)) {
                 $ret[] = $var;
@@ -1338,7 +1339,7 @@ class HTML_Template_Sigma extends PEAR
      */
     function clearVariables()
     {
-        $this->_variables = array();
+        $this->_variables = [];
     }
 
 
@@ -1359,7 +1360,7 @@ class HTML_Template_Sigma extends PEAR
      */
     function _flattenVariables($name, $array)
     {
-        $ret = array();
+        $ret = [];
         foreach ($array as $key => $value) {
             if (is_array($value)) {
                 $ret = array_merge($ret, $this->_flattenVariables($name . '.' . $key, $value));
@@ -1373,8 +1374,8 @@ class HTML_Template_Sigma extends PEAR
     /**
      * Reads the file and returns its content
      *
-     * @param    string    filename
-     * @param    boolean   iscachedFile
+     * @param string    filename
+     * @param boolean   iscachedFile
      * @return   string    file content (or error object)
      * @access   private
      */
@@ -1441,16 +1442,16 @@ class HTML_Template_Sigma extends PEAR
      */
     function _buildBlockVariables($block = '__global__')
     {
-        $this->_blockVariables[$block] = array();
-        $this->_functions[$block] = array();
+        $this->_blockVariables[$block] = [];
+        $this->_functions[$block] = [];
         preg_match_all($this->variablesRegExp, $this->_blocks[$block], $regs, PREG_SET_ORDER);
         foreach ($regs as $match) {
             $this->_blockVariables[$block][$match[1]] = true;
             if (!empty($match[3])) {
-                $funcData = array(
+                $funcData = [
                     'name' => $match[3],
-                    'args' => array($this->openingDelimiter . $match[1] . $this->closingDelimiter)
-                );
+                    'args' => [$this->openingDelimiter . $match[1] . $this->closingDelimiter],
+                ];
                 $funcId = substr(md5(serialize($funcData)), 0, 10);
 
                 // update block info
@@ -1489,7 +1490,7 @@ class HTML_Template_Sigma extends PEAR
      */
     function _buildBlocks($string)
     {
-        $blocks = array();
+        $blocks = [];
         if (preg_match_all($this->blockRegExp, $string, $regs, PREG_SET_ORDER)) {
             foreach ($regs as $match) {
                 $blockname = $match[1];
@@ -1534,12 +1535,12 @@ class HTML_Template_Sigma extends PEAR
         $this->removeUnknownVariables = $removeUnknownVariables;
         $this->removeEmptyBlocks = $removeEmptyBlocks;
         $this->currentBlock = '__global__';
-        $this->_variables = array();
-        $this->_blocks = array();
-        $this->_children = array();
-        $this->_parsedBlocks = array();
-        $this->_touchedBlocks = array();
-        $this->_functions = array();
+        $this->_variables = [];
+        $this->_blocks = [];
+        $this->_children = [];
+        $this->_parsedBlocks = [];
+        $this->_touchedBlocks = [];
+        $this->_functions = [];
         $this->flagGlobalParsed = false;
     } // _resetTemplate
 
@@ -1641,7 +1642,7 @@ class HTML_Template_Sigma extends PEAR
     function _cachedName($filename)
     {
         if (OS_WINDOWS) {
-            $filename = str_replace(array('/', '\\', ':'), array('__', '__', ''), $filename);
+            $filename = str_replace(['/', '\\', ':'], ['__', '__', ''], $filename);
         } else {
             $filename = str_replace('/', '__', $filename);
         }
@@ -1665,12 +1666,12 @@ class HTML_Template_Sigma extends PEAR
     {
         // do not save anything if no cache dir, but do pull triggers
         if (null !== $this->_cacheRoot) {
-            $cache = array(
-                'blocks' => array(),
-                'variables' => array(),
-                'children' => array(),
-                'functions' => array()
-            );
+            $cache = [
+                'blocks' => [],
+                'variables' => [],
+                'children' => [],
+                'functions' => [],
+            ];
             $cachedName = $this->_cachedName($filename);
             $this->_buildCache($cache, $block);
             if ('__global__' != $block) {
@@ -1773,15 +1774,15 @@ class HTML_Template_Sigma extends PEAR
             $cache['blocks'][$block] = $this->_blocks[$block];
         } else {
             $cache['blocks'][$block] = preg_replace(
-                array('/^\\s+/m', '/\\s+$/m', '/(\\r?\\n)+/'),
-                array('', '', "\n"),
+                ['/^\\s+/m', '/\\s+$/m', '/(\\r?\\n)+/'],
+                ['', '', "\n"],
                 $this->_blocks[$block]
             );
         }
         $cache['variables'][$block] = $this->_blockVariables[$block];
-        $cache['functions'][$block] = isset($this->_functions[$block]) ? $this->_functions[$block] : array();
+        $cache['functions'][$block] = isset($this->_functions[$block]) ? $this->_functions[$block] : [];
         if (!isset($this->_children[$block])) {
-            $cache['children'][$block] = array();
+            $cache['children'][$block] = [];
         } else {
             $cache['children'][$block] = $this->_children[$block];
             foreach (array_keys($this->_children[$block]) as $child) {
@@ -1835,7 +1836,7 @@ class HTML_Template_Sigma extends PEAR
      */
     function _findParentBlocks($variable)
     {
-        $parents = array();
+        $parents = [];
         foreach ($this->_blockVariables as $blockname => $varnames) {
             if (!empty($varnames[$variable])) {
                 $parents[] = $blockname;
@@ -1956,10 +1957,10 @@ class HTML_Template_Sigma extends PEAR
             $state = 1;
             $arg = '';
             $quote = '';
-            $funcData = array(
+            $funcData = [
                 'name' => $regs[1],
-                'args' => array()
-            );
+                'args' => [],
+            ];
             for ($i = 0, $len = strlen($template); $i < $len; $i++) {
                 $char = $template[$i];
                 switch ($state) {
@@ -2106,10 +2107,10 @@ class HTML_Template_Sigma extends PEAR
     {
         return strtr(
             $value,
-            array(
+            [
                 "\r" => '\r', "'" => "\\x27", "\n" => '\n',
-                '"' => '\\x22', "\t" => '\t', '\\' => '\\\\'
-            )
+                '"' => '\\x22', "\t" => '\t', '\\' => '\\\\',
+            ]
         );
     }
 
@@ -2141,11 +2142,11 @@ class HTML_Template_Sigma extends PEAR
         return htmlentities($value, ENT_COMPAT, $this->_options['charset']);
     }
 
-    private function strMobile($full,$mobile)
+    private function strMobile($full, $mobile)
     {
         if (@$GLOBALS["its_mobile"] === true) {
             return $mobile;
-        }else{
+        } else {
             return $full;
         }
 
@@ -2173,7 +2174,7 @@ class HTML_Template_Sigma extends PEAR
         } else {
             $files = [$files];
         }
-        if($GLOBALS["its_develop"]){
+        if ($GLOBALS["its_develop"]) {
             $proccCdn = false;
         }
 
@@ -2224,9 +2225,9 @@ class HTML_Template_Sigma extends PEAR
 
     }
 
-    private function jsCdnFile($filenames, $verFilename, $additional='')
+    private function jsCdnFile($filenames, $verFilename, $additional = '')
     {
-        $jsFiles=[];
+        $jsFiles = [];
 
         $typeVersion = '?';
 
@@ -2246,7 +2247,7 @@ class HTML_Template_Sigma extends PEAR
         } else {
             $files = [$files];
         }
-        if($GLOBALS["its_develop"]){
+        if ($GLOBALS["its_develop"]) {
             $proccCdn = false;
         }
 
@@ -2297,7 +2298,35 @@ class HTML_Template_Sigma extends PEAR
 
     }
 
-    private function jsAddFile($filenames, $verFilename, $primary = false,$additional='')
+    private function cdnFile($file)
+    {
+        $proccCdn = true;
+
+        if ($GLOBALS["its_develop"]) {
+            $proccCdn = false;
+        }
+
+        /** CDN mode */
+
+        if ($proccCdn && array_key_exists('HTMLTemplateSigmaCdnParam', $GLOBALS)) {
+            $cdnParams = $GLOBALS['HTMLTemplateSigmaCdnParam'];
+            if (array_key_exists('files', $cdnParams)) {
+                if ($cdnParams['files']['allow'] == true) {
+                    foreach ($cdnParams['files']['from'] as $from => $to) {
+                        if (strpos($file, $from) === 0) {
+                            $file = str_replace($from, $to, $file);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $file;
+
+    }
+
+    private function jsAddFile($filenames, $verFilename, $primary = false, $additional = '')
     {
         $typeVersion = '?';
 
@@ -2317,7 +2346,7 @@ class HTML_Template_Sigma extends PEAR
         } else {
             $files = [$files];
         }
-        if($GLOBALS["its_develop"]){
+        if ($GLOBALS["its_develop"]) {
             $proccCdn = false;
         }
 
@@ -2376,20 +2405,20 @@ class HTML_Template_Sigma extends PEAR
     {
         $return = [];
         $arSummary = [];
-        $filesExist=[];
-        if(count($this->listJsFiles['primary'])>0){
-            foreach($this->listJsFiles['primary'] as $v){
-                if(!in_array($v['file'],$filesExist)){
-                    $filesExist[]=$v['file'];
-                    $arSummary[]=$v;
+        $filesExist = [];
+        if (count($this->listJsFiles['primary']) > 0) {
+            foreach ($this->listJsFiles['primary'] as $v) {
+                if (!in_array($v['file'], $filesExist)) {
+                    $filesExist[] = $v['file'];
+                    $arSummary[] = $v;
                 }
             }
         }
-        if(count($this->listJsFiles['default'])>0){
-            foreach($this->listJsFiles['default'] as $v){
-                if(!in_array($v['file'],$filesExist)){
-                    $filesExist[]=$v['file'];
-                    $arSummary[]=$v;
+        if (count($this->listJsFiles['default']) > 0) {
+            foreach ($this->listJsFiles['default'] as $v) {
+                if (!in_array($v['file'], $filesExist)) {
+                    $filesExist[] = $v['file'];
+                    $arSummary[] = $v;
                 }
             }
         }
@@ -2428,7 +2457,7 @@ class HTML_Template_Sigma extends PEAR
 
     private function jsGetReady()
     {
-        $return = array();
+        $return = [];
         if (count($this->jsReadyString) > 0) {
             $arSummary = array_unique($this->jsReadyString);
             foreach ($arSummary as $jsString) {
@@ -2439,8 +2468,9 @@ class HTML_Template_Sigma extends PEAR
         return join("\r\n", $return);
     }
 
-    private function debug($var=''){
-        if(isset($_GET['debug'])){
+    private function debug($var = '')
+    {
+        if (isset($_GET['debug'])) {
             echo '<pre>';
             var_dump($var);
             echo '</pre>';
@@ -2460,17 +2490,16 @@ class HTML_Template_Sigma extends PEAR
         $nameSharedMemory = @$GLOBALS["HTMLTemplateSigmaTplPrf"] . '_' . 'TemplateSigmaExist_' . md5(realpath($filename));
 
         /* */
-        if (@$GLOBALS["HTMLTemplateSigmaTplPrf"] != '' && $this->SharedMemory != false)
-        {
-            $tmp=$this->SharedMemory->get($nameSharedMemory);
-            if($tmp=='yes'){
-                $file_exists=true;
+        if (@$GLOBALS["HTMLTemplateSigmaTplPrf"] != '' && $this->SharedMemory != false) {
+            $tmp = $this->SharedMemory->get($nameSharedMemory);
+            if ($tmp == 'yes') {
+                $file_exists = true;
 
-            }elseif($tmp=='no'){
-                $file_exists=false;
-            }else{
+            } elseif ($tmp == 'no') {
+                $file_exists = false;
+            } else {
                 $file_exists = file_exists($this->fileRoot . $filenameMobile);
-                ($file_exists==true?$tmp='yes':$tmp='no');
+                ($file_exists == true ? $tmp = 'yes' : $tmp = 'no');
                 $this->SharedMemory->set($nameSharedMemory, $tmp, 10 * 60);
 
             }
