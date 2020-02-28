@@ -19,6 +19,8 @@
  * @link      http://pear.php.net/package/HTML_Template_Sigma
  */
 
+use JustCommunication\Cache;
+
 /**
  * PEAR and PEAR_Error classes (for error handling)
  */
@@ -376,7 +378,7 @@ class HTML_Template_Sigma extends PEAR
      * @var    object
      * @access private
      */
-    var $SharedMemory = false;
+    var $cache = false;
 
     private $listJsFiles = [];
 
@@ -391,11 +393,11 @@ class HTML_Template_Sigma extends PEAR
      *
      * @param string $root root directory for templates
      * @param string $cacheRoot directory to cache "prepared" templates in
-     * @param System_SharedMemory_Memcache|boolean $SharedMemory
+     * @param Cache|System_SharedMemory_Memcache|boolean $cache
      *
      * @see   setRoot(), setCacheRoot()
      */
-    public function __construct($root = '', $cacheRoot = '', &$SharedMemory = false)
+    public function __construct($root = '', $cacheRoot = '', $cache = false)
     {
         if (!is_array(@$GLOBALS['HTMLTemplateSigmajsReadyString'])) {
             $GLOBALS['HTMLTemplateSigmajsReadyString'] = [];
@@ -443,8 +445,8 @@ class HTML_Template_Sigma extends PEAR
         $this->setCallbackFunction('jsGetReady', [&$this, 'jsGetReady']);
         $this->setCallbackFunction('strMobile', [&$this, 'strMobile']);
 
-        if ($SharedMemory != false) {
-            $this->setSharedMemory($SharedMemory);
+        if ($cache != false) {
+            $this->setCache($cache);
         }
     }
 
@@ -501,14 +503,14 @@ class HTML_Template_Sigma extends PEAR
 
     /**
      * @access public
-     * @param object SharedMemory
+     * @param object Cache|SharedMemory
      * @return $this
      */
-    function setSharedMemory(&$SharedMemory)
+    function setCache($cache)
     {
-        $this->SharedMemory = false;
-        if ($SharedMemory != false && strpos(get_class($SharedMemory), 'SharedMemory') !== false) {
-            $this->SharedMemory = $SharedMemory;
+        $this->cache = false;
+        if ($cache != false && (strpos(get_class($cache), 'SharedMemory') !== false || strpos(get_class($cache), 'JustCommunication\Cache') !== false)) {
+            $this->cache = $cache;
         }
         return $this;
     }
@@ -1389,7 +1391,7 @@ class HTML_Template_Sigma extends PEAR
 
         $useSharedMemory = false;
         $nameSharedMemory = @$GLOBALS["HTMLTemplateSigmaTplPrf"] . '_' . 'TemplateSigma_' . md5(realpath($filename));
-        if ($cachedFile === true && $this->SharedMemory != false && method_exists($this->SharedMemory, 'get') && method_exists($this->SharedMemory, 'set') && method_exists($this->SharedMemory, 'rm')) {
+        if ($cachedFile === true && $this->cache != false && method_exists($this->cache, 'get') && method_exists($this->cache, 'set') && method_exists($this->cache, 'rm')) {
             $useSharedMemory = true;
         }
         $memcache = false;
@@ -1401,7 +1403,7 @@ class HTML_Template_Sigma extends PEAR
             }
 
             @$GLOBALS["HTMLTemplateSigmaStat"]["tpl"]["memcache"][] = $filename;
-            if ($content = $this->SharedMemory->get($nameSharedMemory)) {
+            if ($content = $this->cache->get($nameSharedMemory)) {
                 $memcache = true;
             }
         }
@@ -1421,8 +1423,8 @@ class HTML_Template_Sigma extends PEAR
         }
 
         if ($useSharedMemory && $memcache === false) {
-            $this->SharedMemory->rm($nameSharedMemory);
-            $this->SharedMemory->set($nameSharedMemory, $content, 10 * 60);
+            $this->cache->rm($nameSharedMemory);
+            $this->cache->set($nameSharedMemory, $content, 10 * 60);
         }
 
         return $content;
@@ -2490,8 +2492,8 @@ class HTML_Template_Sigma extends PEAR
         $nameSharedMemory = @$GLOBALS["HTMLTemplateSigmaTplPrf"] . '_' . 'TemplateSigmaExist_' . md5(realpath($filename));
 
         /* */
-        if (@$GLOBALS["HTMLTemplateSigmaTplPrf"] != '' && $this->SharedMemory != false) {
-            $tmp = $this->SharedMemory->get($nameSharedMemory);
+        if (@$GLOBALS["HTMLTemplateSigmaTplPrf"] != '' && $this->cache != false) {
+            $tmp = $this->cache->get($nameSharedMemory);
             if ($tmp == 'yes') {
                 $file_exists = true;
 
@@ -2500,7 +2502,7 @@ class HTML_Template_Sigma extends PEAR
             } else {
                 $file_exists = file_exists($this->fileRoot . $filenameMobile);
                 ($file_exists == true ? $tmp = 'yes' : $tmp = 'no');
-                $this->SharedMemory->set($nameSharedMemory, $tmp, 10 * 60);
+                $this->cache->set($nameSharedMemory, $tmp, 10 * 60);
 
             }
 
