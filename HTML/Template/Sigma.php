@@ -2211,8 +2211,8 @@ class HTML_Template_Sigma extends PEAR
                 $cdnParams = $GLOBALS['HTMLTemplateSigmaCdnParam'];
                 if ($cdnParams['css']['allow'] == true) {
                     foreach ($cdnParams['css']['from'] as $from => $to) {
-                        if (strpos($file, $from) === 0) {
-                            $file = str_replace($from, $to, $file);
+                        if (substr($file, 0, strlen($from)) == $from) {
+                            $file = $to . substr($file, strlen($from));
                             break;
                         }
                     }
@@ -2284,8 +2284,8 @@ class HTML_Template_Sigma extends PEAR
                 $cdnParams = $GLOBALS['HTMLTemplateSigmaCdnParam'];
                 if ($cdnParams['js']['allow'] == true) {
                     foreach ($cdnParams['js']['from'] as $from => $to) {
-                        if (strpos($file, $from) === 0) {
-                            $file = str_replace($from, $to, $file);
+                        if (substr($file, 0, strlen($from)) == $from) {
+                            $file = $to . substr($file, strlen($from));
                             break;
                         }
                     }
@@ -2315,8 +2315,8 @@ class HTML_Template_Sigma extends PEAR
             if (array_key_exists('files', $cdnParams)) {
                 if ($cdnParams['files']['allow'] == true) {
                     foreach ($cdnParams['files']['from'] as $from => $to) {
-                        if (strpos($file, $from) === 0) {
-                            $file = str_replace($from, $to, $file);
+                        if (substr($file, 0, strlen($from)) == $from) {
+                            $file = $to . substr($file, strlen($from));
                             break;
                         }
                     }
