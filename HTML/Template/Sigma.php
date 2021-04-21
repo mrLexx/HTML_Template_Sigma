@@ -2154,7 +2154,7 @@ class HTML_Template_Sigma extends PEAR
 
     }
 
-    private function cssCdnFile($filenames, $verFilename)
+    private function cssCdnFile($filenames, $verFilename = '')
     {
         $cssFiles = [];
 
@@ -2227,7 +2227,7 @@ class HTML_Template_Sigma extends PEAR
 
     }
 
-    private function jsCdnFile($filenames, $verFilename, $additional = '')
+    private function jsCdnFile($filenames, $verFilename = '', $additional = '')
     {
         $jsFiles = [];
 
@@ -2328,7 +2328,7 @@ class HTML_Template_Sigma extends PEAR
 
     }
 
-    private function jsAddFile($filenames, $verFilename, $primary = false, $additional = '')
+    private function jsAddFile($filenames, $verFilename = '', $primary = false, $additional = '')
     {
         $typeVersion = '?';
 
